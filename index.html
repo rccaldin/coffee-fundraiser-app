@@ -1,5 +1,4 @@
-<Code id="coffee-order-app-v2" title="Macchiato Fundraiser Order Queue App">
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -282,3 +281,77 @@
 <script>
     const { createApp, ref, computed } = Vue;
 
+        createApp({
+        setup() {
+            const currentView = ref('customer');
+            const menu = [
+                'Classic Iced Caramel Macchiato', 
+                'Caramel Pumpkin Macchiato', 
+                'Iced Apple Crisp Macchiato'
+            ];
+            const submittedMessage = ref('');
+            
+            const form = ref({
+                name: '',
+                drink: 'Classic Iced Caramel Macchiato',
+                milk: 'Whole Milk',
+                comment: ''
+            });
+
+            const orders = ref([
+                { id: 1, name: 'Pastor Dave', drink: 'Caramel Pumpkin Macchiato', milk: 'Whole Milk', comment: '', time: '8:45 AM', done: false },
+                { id: 2, name: 'Sarah M.', drink: 'Iced Apple Crisp Macchiato', milk: 'Almond Milk', comment: 'no cinnamon', time: '8:48 AM', done: false }
+            ]);
+
+            const activeOrders = computed(() => orders.value.filter(o => !o.done));
+            const completedOrders = computed(() => orders.value.filter(o => o.done));
+            const activeOrdersCount = computed(() => activeOrders.value.length);
+
+            const submitOrder = () => {
+                if (!form.value.name || !form.value.drink) return;
+
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                orders.value.push({
+                    id: Date.now(),
+                    name: form.value.name,
+                    drink: form.value.drink,
+                    milk: form.value.milk,
+                    comment: form.value.comment.trim(),
+                    time: timeString,
+                    done: false
+                });
+
+                submittedMessage.value = `Order received for ${form.value.name}! See you at the table.`;
+                
+                form.value.name = '';
+                form.value.drink = 'Classic Iced Caramel Macchiato';
+                form.value.milk = 'Whole Milk';
+                form.value.comment = '';
+
+                setTimeout(() => { submittedMessage.value = ''; }, 6000);
+            };
+
+            const toggleComplete = (id) => {
+                const order = orders.value.find(o => o.id === id);
+                if (order) order.done = !order.done;
+            };
+
+            return {
+                currentView,
+                menu,
+                form,
+                orders,
+                activeOrders,
+                completedOrders,
+                activeOrdersCount,
+                submitOrder,
+                toggleComplete,
+                submittedMessage
+            }
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
