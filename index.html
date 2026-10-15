@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coffee Fundraiser Queue</title>
+    <title>Christ the King Festival Queue</title>
     <style>
         :root { --primary: #4a3728; --primary-light: #f5f2eb; --accent: #d4a373; --text: #2b2d42; --success: #2a9d8f; }
         body { font-family: -apple-system, sans-serif; margin: 0; padding: 0; background-color: var(--primary-light); color: var(--text); }
         header { background-color: var(--primary); color: white; text-align: center; padding: 1.5rem 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        header h1 { margin: 0; font-size: 1.8rem; }
-        header p { margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.9rem; }
+        header h1 { margin: 0; font-size: 1.6rem; }
+        header p { margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 1rem; font-weight: bold; }
         .container { max-width: 600px; margin: 0 auto; padding: 1rem; }
         .view-toggle { display: flex; background: #e0d9cf; padding: 0.3rem; border-radius: 8px; margin-bottom: 1.5rem; }
         .view-toggle button { flex: 1; background: none; border: none; padding: 0.6rem; font-weight: bold; color: var(--primary); cursor: pointer; border-radius: 6px; }
@@ -21,12 +21,13 @@
         input[type="text"], select { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
         button.btn-submit { width: 100%; background-color: var(--success); color: white; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; }
         .queue-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-left: 5px solid var(--accent); background: #fff; margin-bottom: 0.75rem; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .queue-item.completed { border-left-color: #ccc; opacity: 0.5; }
-        .queue-item.completed h3 { text-decoration: line-through; }
+        .queue-item.completed { border-left-color: #ccc; opacity: 0.6; }
+        .queue-item.completed h3 { text-decoration: line-through; color: #7f8c8d; }
         .order-meta h3 { margin: 0; color: var(--primary); }
         .order-details { font-size: 0.95rem; color: #333; margin-top: 0.25rem; }
         .order-comment { font-size: 0.9rem; color: #c0392b; font-style: italic; margin-top: 0.25rem; background: #fff3f3; padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block; }
         .order-time { font-size: 0.75rem; color: #888; margin-top: 0.3rem; }
+        .wait-tag { font-size: 0.8rem; font-weight: bold; color: #2e7d32; background: #e8f5e9; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-block; margin-top: 0.25rem; }
         .btn-complete { background-color: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-complete.undo { background-color: #6c757d; }
         .empty-state { text-align: center; padding: 2rem 1rem; color: #888; }
@@ -35,8 +36,8 @@
 </head>
 <body>
 <header>
-    <h1>🎪 Church Grounds Coffee</h1>
-    <p>Specialty Macchiato Station</p>
+    <h1>Our Lady of Fatima Church</h1>
+    <p>🎪 Christ the King Festival Coffee Booth 🎪</p>
 </header>
 <div class="container">
     <div class="view-toggle">
@@ -87,48 +88,93 @@
     </div>
 </div>
 <script>
-    let orders = [
-        { id: 1, name: 'Pastor Dave', drink: 'Caramel Pumpkin Macchiato', milk: 'Whole Milk', comment: '', time: '8:45 AM', done: false },
-        { id: 2, name: 'Sarah M.', drink: 'Iced Apple Crisp Macchiato', milk: 'Almond Milk', comment: 'no cinnamon', time: '8:48 AM', done: false }
-    ];
+    let orders = [];
+
     function renderQueue() {
         const activeList = document.getElementById('active-list');
         const completedList = document.getElementById('completed-list');
         let activeHtml = '', completedHtml = '', activeCount = 0;
+
         orders.forEach(order => {
             const commentHtml = order.comment ? `<div class="order-comment">⚠️ Instructions: ${order.comment}</div>` : '';
+            const startTimeObj = new Date(order.startTime);
+            const timeString = startTimeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
             if (!order.done) {
                 activeCount++;
-                activeHtml += `<div class="queue-item"><div class="order-meta"><h3>${order.name}</h3><div class="order-details"><strong>${order.drink}</strong> — <u>${order.milk}</u></div>${commentHtml}<div class="order-time">Ordered at ${order.time}</div></div><div><button class="btn-complete" onclick="toggleOrder(${order.id})">Done ✓</button></div></div>`;
+                activeHtml += `<div class="queue-item"><div class="order-meta"><h3>${order.name}</h3><div class="order-details"><strong>${order.drink}</strong> — <u>${order.milk}</u></div>${commentHtml}<div class="order-time">Ordered at ${timeString}</div></div><div><button class="btn-complete" onclick="toggleOrder(${order.id})">Done ✓</button></div></div>`;
             } else {
-                completedHtml += `<div class="queue-item completed"><div class="order-meta"><h3>${order.name}</h3><div class="order-details">${order.drink} (${order.milk})</div></div><div><button class="btn-complete undo" onclick="toggleOrder(${order.id})">Undo</button></div></div>`;
+                const waitHtml = order.waitTimeText ? `<div class="wait-tag">⏱️ Wait Time: ${order.waitTimeText}</div>` : '';
+                completedHtml += `<div class="queue-item completed"><div class="order-meta"><h3>${order.name}</h3><div class="order-details">${order.drink} (${order.milk})</div>${waitHtml}</div><div><button class="btn-complete undo" onclick="toggleOrder(${order.id})">Undo</button></div></div>`;
             }
         });
         document.getElementById('queue-count').innerText = activeCount;
         activeList.innerHTML = activeHtml || '<div class="empty-state">☕ No pending orders. Time to build layers!</div>';
         completedList.innerHTML = completedHtml || '<div class="empty-state" style="padding:1rem;">No completed items yet.</div>';
     }
+
     function switchView(view) {
         if (view === 'customer') {
-            document.getElementById('view-customer').style.display = 'block'; document.getElementById('view-kitchen').style.display = 'none';
-            document.getElementById('tab-customer').classList.add('active'); document.getElementById('tab-kitchen').classList.remove('active');
+            document.getElementById('view-customer').style.display = 'block';
+            document.getElementById('view-kitchen').style.display = 'none';
+            document.getElementById('tab-customer').classList.add('active');
+            document.getElementById('tab-kitchen').classList.remove('active');
         } else {
-            document.getElementById('view-customer').style.display = 'none'; document.getElementById('view-kitchen').style.display = 'block';
-            document.getElementById('tab-customer').classList.remove('active'); document.getElementById('tab-kitchen').classList.add('active');
+            document.getElementById('view-customer').style.display = 'none';
+            document.getElementById('view-kitchen').style.display = 'block';
+            document.getElementById('tab-customer').classList.remove('active');
+            document.getElementById('tab-kitchen').classList.add('active');
         }
     }
+
     function handleFormSubmit() {
-        const nameInput = document.getElementById('custName'), drinkInput = document.getElementById('custDrink'), milkInput = document.getElementById('custMilk'), commentInput = document.getElementById('custComment');
-        const now = new Date(), timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        orders.push({ id: Date.now(), name: nameInput.value, drink: drinkInput.value, milk: milkInput.value, comment: commentInput.value.trim(), time: timeString, done: false });
+        const nameInput = document.getElementById('custName');
+        const drinkInput = document.getElementById('custDrink');
+        const milkInput = document.getElementById('custMilk');
+        const commentInput = document.getElementById('custComment');
+
+        orders.push({
+            id: Date.now(),
+            name: nameInput.value,
+            drink: drinkInput.value,
+            milk: milkInput.value,
+            comment: commentInput.value.trim(),
+            startTime: Date.now(),
+            endTime: null,
+            waitTimeText: '',
+            done: false
+        });
+
         const alertBox = document.getElementById('success-alert');
         alertBox.innerText = `🎉 Order received for ${nameInput.value}! See you at the table.`;
         alertBox.style.display = 'block';
-        nameInput.value = ''; commentInput.value = ''; drinkInput.selectedIndex = 0; milkInput.selectedIndex = 0;
-        renderQueue(); window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        nameInput.value = ''; commentInput.value = '';
+        drinkInput.selectedIndex = 0; milkInput.selectedIndex = 0;
+
+        renderQueue();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => { alertBox.style.display = 'none'; }, 6000);
     }
-    function toggleOrder(id) { const order = orders.find(o => o.id === id); if (order) order.done = !order.done; renderQueue(); }
+
+    function toggleOrder(id) {
+        const order = orders.find(o => o.id === id);
+        if (order) {
+            order.done = !order.done;
+            if (order.done) {
+                order.endTime = Date.now();
+                const diffMs = order.endTime - order.startTime;
+                const totalSecs = Math.floor(diffMs / 1000);
+                const mins = Math.floor(totalSecs / 60);
+                const secs = totalSecs % 60;
+                order.waitTimeText = mins + "m " + secs + "s";
+            } else {
+                order.endTime = null;
+                order.waitTimeText = '';
+            }
+        }
+        renderQueue();
+    }
     renderQueue();
 </script>
 </body>
