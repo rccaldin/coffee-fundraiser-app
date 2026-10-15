@@ -3,348 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fundraiser Macchiato Queue</title>
+    <title>Coffee Fundraiser</title>
     <script src="https://jsdelivr.net"></script>
     <style>
-        :root {
-            --primary: #4a3728;
-            --primary-light: #f5f2eb;
-            --accent: #d4a373;
-            --text: #2b2d42;
-            --success: #2a9d8f;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--primary-light);
-            color: var(--text);
-        }
-        header {
-            background-color: var(--primary);
-            color: white;
-            text-align: center;
-            padding: 1.5rem 1rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        header h1 { margin: 0; font-size: 1.8rem; }
-        header p { margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.9rem; }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-        
-        .view-toggle {
-            display: flex;
-            background: #e0d9cf;
-            padding: 0.3rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-        .view-toggle button {
-            flex: 1;
-            background: none;
-            border: none;
-            padding: 0.6rem;
-            font-weight: bold;
-            color: var(--primary);
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .view-toggle button.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 1.5rem;
-        }
-        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-light); padding-bottom: 0.5rem; }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 0.4rem;
-            font-size: 0.95rem;
-        }
-        input[type="text"], select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-        .radio-tile-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .radio-tile {
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: left;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .radio-tile.selected {
-            border-color: var(--primary);
-            background-color: #fcfaf7;
-            color: var(--primary);
-            font-weight: bold;
-        }
-        
-        button.btn-submit {
-            width: 100%;
-            background-color: var(--success);
-            color: white;
-            border: none;
-            padding: 1rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(42, 157, 143, 0.2);
-        }
-        button.btn-submit:active { transform: scale(0.99); }
-
-        .queue-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            border-left: 5px solid var(--accent);
-            background: #fff;
-            margin-bottom: 0.75rem;
-            border-radius: 0 8px 8px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .queue-item.completed {
-            border-left-color: #ccc;
-            opacity: 0.6;
-        }
-        .queue-item.completed .order-title {
-            text-decoration: line-through;
-        }
-        .order-meta h3 { margin: 0; color: var(--primary); }
-        .order-details { font-size: 0.95rem; color: #333; margin-top: 0.25rem; }
-        .order-comment { font-size: 0.9rem; color: #c0392b; font-style: italic; margin-top: 0.25rem; background: #fff3f3; padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block;}
-        .order-time { font-size: 0.75rem; color: #888; margin-top: 0.3rem; }
-        
-        .btn-complete {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .btn-complete.undo {
-            background-color: #6c757d;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: #888;
-        }
-        
-        .success-banner {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 1rem;
-            font-weight: bold;
-        }
+        :root { --p: #4a3728; --pl: #f5f2eb; --a: #d4a373; --t: #2b2d42; --s: #2a9d8f; }
+        body { font-family: sans-serif; margin: 0; background: var(--pl); color: var(--t); }
+        header { background: var(--p); color: white; text-align: center; padding: 1.5rem; }
+        .container { max-width: 600px; margin: 0 auto; padding: 1rem; }
+        .toggle { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .toggle button { flex: 1; padding: 0.75rem; font-weight: bold; background: #e0d9cf; border: none; border-radius: 6px; cursor: pointer; }
+        .toggle button.active { background: var(--p); color: white; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 1rem; }
+        .group { margin-bottom: 1.25rem; }
+        label { display: block; font-weight: bold; margin-bottom: 0.4rem; }
+        input, select { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        .btn-submit { width: 100%; background: var(--s); color: white; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        .queue-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-left: 5px solid var(--a); background: #fff; margin-bottom: 0.75rem; border-radius: 0 8px 8px 0; }
+        .done-btn { background: var(--p); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .banner { background: #e8f5e9; color: #2e7d32; padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1rem; font-weight: bold; }
     </style>
 </head>
 <body>
-
 <div id="app">
     <header>
         <h1>🎪 Church Grounds Coffee</h1>
         <p>Specialty Macchiato Station</p>
     </header>
-
     <div class="container">
-        <!-- Tab view toggle navigation -->
-        <div class="view-toggle">
-            <button :class="{ active: currentView === 'customer' }" @click="currentView = 'customer'">📱 Customer Form</button>
-            <button :class="{ active: currentView === 'kitchen' }" @click="currentView = 'kitchen'">☕ Barista Queue ({{ activeOrdersCount }})</button>
+        <div class="toggle">
+            <button :class="{ active: view === 'customer' }" @click="view = 'customer'">📱 Order Form</button>
+            <button :class="{ active: view === 'kitchen' }" @click="view = 'kitchen'">☕ Queue ({{ activeCount }})</button>
         </div>
 
-        <!-- CUSTOMER FORM VIEW -->
-        <div v-if="currentView === 'customer'">
-            <div v-if="submittedMessage" class="success-banner">
-                🎉 {{ submittedMessage }}
-            </div>
-
+        <div v-if="view === 'customer'">
+            <div v-if="msg" class="banner">🎉 {{ msg }}</div>
             <div class="card">
                 <h2>Place Your Macchiato Order</h2>
-                
-                <div class="form-group">
-                    <label>Your Name</label>
-                    <input type="text" v-model="form.name" placeholder="Enter name for your cup" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Select Your Drink</label>
-                    <div class="radio-tile-group">
-                        <div v-for="item in menu" :key="item" 
-                             class="radio-tile" 
-                             :class="{ selected: form.drink === item }"
-                             @click="form.drink = item">
-                            {{ item }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Milk Choice</label>
-                    <select v-model="form.milk">
-                        <option value="Whole Milk">Whole Milk</option>
-                        <option value="Almond Milk">Almond Milk</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Comments / Special Instructions</label>
-                    <input type="text" v-model="form.comment" placeholder="Example: no cinnamon, extra caramel, etc.">
-                </div>
-
-                <button class="btn-submit" @click="submitOrder" :disabled="!form.name || !form.drink">
-                    🚀 Submit Order to Booth
-                </button>
+                <div class="group"><label>Your Name</label><input type="text" v-model="form.name" placeholder="Name for your cup"></div>
+                <div class="group"><label>Select Your Drink</label><select v-model="form.drink"><option v-for="d in menu" :value="d">{{ d }}</option></select></div>
+                <div class="group"><label>Milk Choice</label><select v-model="form.milk"><option value="Whole Milk">Whole Milk</option><option value="Almond Milk">Almond Milk</option></select></div>
+                <div class="group"><label>Instructions</label><input type="text" v-model="form.comment" placeholder="Example: no cinnamon"></div>
+                <button class="btn-submit" @click="submit" :disabled="!form.name">🚀 Submit Order</button>
             </div>
         </div>
 
-        <!-- BARISTA QUEUE VIEW -->
-        <div v-if="currentView === 'kitchen'">
+        <div v-if="view === 'kitchen'">
             <div class="card">
                 <h2>Active Orders Queue</h2>
-                <div v-if="activeOrders.length === 0" class="empty-state">
-                    ☕ No pending orders. Time to build layers!
-                </div>
-                <div v-for="order in activeOrders" :key="order.id" class="queue-item">
-                    <div class="order-meta">
-                        <h3 class="order-title">{{ order.name }}</h3>
-                        <div class="order-details">
-                            <strong>{{ order.drink }}</strong> — <u>{{ order.milk }}</u>
-                        </div>
-                        <div v-if="order.comment" class="order-comment">
-                            ⚠️ Instructions: {{ order.comment }}
-                        </div>
-                        <div class="order-time">Ordered at {{ order.time }}</div>
-                    </div>
+                <div v-if="activeOrders.length === 0" style="text-align:center; color:#888;">☕ No pending orders.</div>
+                <div v-for="o in activeOrders" :key="o.id" class="queue-item">
                     <div>
-                        <button class="btn-complete" @click="toggleComplete(order.id)">Done ✓</button>
+                        <h3 style="margin:0;">{{ o.name }}</h3>
+                        <div style="font-size:0.95rem; margin-top:0.25rem;"><strong>{{ o.drink }}</strong> — <u>{{ o.milk }}</u></div>
+                        <div v-if="o.comment" style="font-size:0.9rem; color:#c0392b; font-style:italic; margin-top:0.25rem;">⚠️ {{ o.comment }}</div>
                     </div>
-                </div>
-            </div>
-
-            <div class="card" style="background: #fdfdfd;">
-                <h2 style="color: #888; font-size: 1.1rem;">Completed Items</h2>
-                <div v-if="completedOrders.length === 0" class="empty-state" style="padding: 1rem;">
-                    No completed items yet.
-                </div>
-                <div v-for="order in completedOrders" :key="order.id" class="queue-item completed">
-                    <div class="order-meta">
-                        <h3 class="order-title">{{ order.name }}</h3>
-                        <div class="order-details">{{ order.drink }} ({{ order.milk }})</div>
-                    </div>
-                    <div>
-                        <button class="btn-complete undo" @click="toggleComplete(order.id)">Undo</button>
-                    </div>
+                    <button class="done-btn" @click="o.done = true">Done ✓</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script>
-    const { createApp, ref, computed } = Vue;
-
-    createApp({
-        setup() {
-            const currentView = ref('customer');
-            const menu = [
-               'Caramel Pumpkin Macchiato', 
-                'Iced Apple Crisp Macchiato'
-            ];
-            const submittedMessage = ref('');
-            
-            const form = ref({
-                name: '',
-                drink: 'Classic Iced Caramel Macchiato',
-                milk: 'Whole Milk',
-                comment: ''
-            });
-
-            const orders = ref([
-                { id: 1, name: 'Pastor Dave', drink: 'Caramel Pumpkin Macchiato', milk: 'Whole Milk', comment: '', time: '8:45 AM', done: false },
-                { id: 2, name: 'Sarah M.', drink: 'Iced Apple Crisp Macchiato', milk: 'Almond Milk', comment: 'no cinnamon', time: '8:48 AM', done: false }
-            ]);
-
-            const activeOrders = computed(() => orders.value.filter(o => !o.done));
-            const completedOrders = computed(() => orders.value.filter(o => o.done));
-            const activeOrdersCount = computed(() => activeOrders.value.length);
-
-            const submitOrder = () => {
-                if (!form.value.name || !form.value.drink) return;
-
-                const now = new Date();
-                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                orders.value.push({
-                    id: Date.now(),
-                    name: form.value.name,
-                    drink: form.value.drink,
-                    milk: form.value.milk,
-                    comment: form.value.comment.trim(),
-                    time: timeString,
-                    done: false
-                });
-
-                submittedMessage.value = `Order received for ${form.value.name}! See you at the table.`;
-                
-                form.value.name = '';
-                form.value.drink = 'Classic Iced Caramel Macchiato';
-                form.value.milk = 'Whole Milk';
-                form.value.comment = '';
-
-                setTimeout(() => { submittedMessage.value = ''; }, 6000);
-            };
-
-            const toggleComplete = (id) => {
-                const order = orders.value.find(o => o.id === id);
-                if (order) order.done = !order.done;
-            };
-
+    Vue.createApp({
+        data() {
             return {
-                currentView,
-                menu,
-                form,
-                orders,
-                activeOrders,
-                completedOrders,
-                activeOrdersCount,
-                submitOrder,
-                toggleComplete,
-                submittedMessage
+                view: 'customer',
+                msg: '',
+                menu: ['Classic Iced Caramel Macchiato', 'Caramel Pumpkin Macchiato', 'Iced Apple Crisp Macchiato'],
+                form: { name: '', drink: 'Classic Iced Caramel Macchiato', milk: 'Whole Milk', comment: '' },
+                orders: [
+                    { id: 1, name: 'Pastor Dave', drink: 'Caramel Pumpkin Macchiato', milk: 'Whole Milk', comment: '', done: false },
+                    { id: 2, name: 'Sarah M.', drink: 'Iced Apple Crisp Macchiato', milk: 'Almond Milk', comment: 'no cinnamon', done: false }
+                ]
+            }
+        },
+        computed: {
+            activeOrders() { return this.orders.filter(o => !o.done); },
+            activeCount() { return this.activeOrders.length; }
+        },
+        methods: {
+            submit() {
+                this.orders.push({ id: Date.now(), name: this.form.name, drink: this.form.drink, milk: this.form.milk, comment: this.form.comment, done: false });
+                this.msg = `Order received for ${this.form.name}!`;
+                this.form.name = ''; this.form.comment = '';
+                setTimeout(() => { this.msg = ''; }, 4000);
             }
         }
     }).mount('#app');
