@@ -76,7 +76,58 @@
 </div>
 <script>
     let orders = [];
+// ==========================================
+// CENTRAL DRINK MENU DATABASE (Update here!)
+// ==========================================
+const DRINK_MENU = {
+    "Classic Iced Caramel Macchiato": {
+        description: "A timeless, beautiful layered favorite. Rich espresso poured directly over cold milk and sweet vanilla syrup, finished with a generous crosshatch drizzle of buttery caramel sauce.",
+        image: "classic.jpg"
+    },
+    "Caramel Pumpkin Macchiato": {
+        description: "A cozy autumn upgrade that swaps standard vanilla for seasonal spices. Warm pumpkin pie flavors blend seamlessly with a velvety espresso base and heavy caramel topping.",
+        image: "pumpkin.jpg"
+    },
+    "Iced Apple Crisp Macchiato": {
+        description: "A crisp, orchard-inspired harvest blend. Features the comforting flavors of spiced brown sugar, warm apple crisp, and a light dusting of aromatic cinnamon over smooth cold layers.",
+        image: "apple.jpg"
+    }
+};
 
+
+function initializeMenuDropdown() {
+    const drinkSelect = document.getElementById('custDrink');
+    drinkSelect.innerHTML = "";
+    Object.keys(DRINK_MENU).forEach(drinkName => {
+        let opt = document.createElement('option');
+        opt.value = drinkName;
+        opt.innerHTML = drinkName;
+        drinkSelect.appendChild(opt);
+    });
+    updateDrinkDisplay();
+}
+
+function updateDrinkDisplay() {
+    const selectedDrink = document.getElementById('custDrink').value;
+    const previewCard = document.getElementById('drink-preview-card');
+    const previewImg = document.getElementById('preview-image');
+    const previewTitle = document.getElementById('preview-title');
+    const previewDesc = document.getElementById('preview-desc');
+    
+    if (DRINK_MENU[selectedDrink]) {
+        previewImg.src = DRINK_MENU[selectedDrink].image;
+        previewTitle.innerText = selectedDrink;
+        previewDesc.innerText = DRINK_MENU[selectedDrink].description;
+        previewCard.style.display = "block";
+    } else {
+        previewCard.style.display = "none";
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    initializeMenuDropdown();
+});
+    
     function renderQueue() {
         const listContainer = document.getElementById('customer-list');
         let html = '';
