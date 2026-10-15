@@ -40,13 +40,19 @@
                 <label>Your Name</label>
                 <input type="text" id="custName" placeholder="Enter name for your cup" required>
             </div>
-            <div class="form-group">
-                <label>Select Your Drink</label>
-                <select id="custDrink">
-                    <option value="Classic Iced Caramel Macchiato">Classic Iced Caramel Macchiato</option>
-                    <option value="Caramel Pumpkin Macchiato">Caramel Pumpkin Macchiato</option>
-                    <option value="Iced Apple Crisp Macchiato">Iced Apple Crisp Macchiato</option>
-                </select>
+                    <div class="form-group">
+            <label>Select Your Drink</label>
+            <select id="custDrink" onchange="updateDrinkDisplay()">
+                <!-- Options are generated automatically by the script -->
+            </select>
+        </div>
+            
+        <!-- Fancy Drink Detail Display Area -->
+        <div id="drink-preview-card" class="card" style="display: none; background: #faf8f5; border: 1px dashed var(--accent); margin-top: 1rem; padding: 1rem; text-align: center;">
+            <img id="preview-image" src="" alt="Drink Preview" style="max-width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 0.75rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <h3 id="preview-title" style="margin: 0 0 0.5rem 0; color: var(--primary);"></h3>
+            <p id="preview-desc" style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.4; font-style: italic;"></p>
+        </div>
             </div>
             <div class="form-group">
                 <label>Milk Choice</label>
