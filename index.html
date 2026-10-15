@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christ the King Festival Queue</title>
+    <title>Christ the King Festival - Order Station</title>
     <style>
         :root { --primary: #4a3728; --primary-light: #f5f2eb; --accent: #d4a373; --text: #2b2d42; --success: #2a9d8f; }
         body { font-family: -apple-system, sans-serif; margin: 0; padding: 0; background-color: var(--primary-light); color: var(--text); }
@@ -11,25 +11,17 @@
         header h1 { margin: 0; font-size: 1.6rem; }
         header p { margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 1rem; font-weight: bold; }
         .container { max-width: 600px; margin: 0 auto; padding: 1rem; }
-        .view-toggle { display: flex; background: #e0d9cf; padding: 0.3rem; border-radius: 8px; margin-bottom: 1.5rem; }
-        .view-toggle button { flex: 1; background: none; border: none; padding: 0.6rem; font-weight: bold; color: var(--primary); cursor: pointer; border-radius: 6px; }
-        .view-toggle button.active { background: var(--primary); color: white; }
         .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
         h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-light); padding-bottom: 0.5rem; }
         .form-group { margin-bottom: 1.25rem; }
         label { display: block; font-weight: bold; margin-bottom: 0.4rem; font-size: 0.95rem; }
         input[type="text"], select { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
         button.btn-submit { width: 100%; background-color: var(--success); color: white; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; }
-        .queue-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-left: 5px solid var(--accent); background: #fff; margin-bottom: 0.75rem; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .queue-item.completed { border-left-color: #ccc; opacity: 0.6; }
-        .queue-item.completed h3 { text-decoration: line-through; color: #7f8c8d; }
+        .queue-item { padding: 1rem; border-left: 5px solid var(--accent); background: #fff; margin-bottom: 0.75rem; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .order-meta h3 { margin: 0; color: var(--primary); }
         .order-details { font-size: 0.95rem; color: #333; margin-top: 0.25rem; }
-        .order-comment { font-size: 0.9rem; color: #c0392b; font-style: italic; margin-top: 0.25rem; background: #fff3f3; padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block; }
         .order-time { font-size: 0.75rem; color: #888; margin-top: 0.3rem; }
-        .wait-tag { font-size: 0.8rem; font-weight: bold; color: #2e7d32; background: #e8f5e9; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-block; margin-top: 0.25rem; }
-        .btn-complete { background-color: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-complete.undo { background-color: #6c757d; }
+        .status-badge { display: inline-block; font-size: 0.75rem; font-weight: bold; color: #d4a373; background: #fdf6ed; padding: 0.2rem 0.5rem; border-radius: 4px; margin-top: 0.3rem; text-transform: uppercase; }
         .empty-state { text-align: center; padding: 2rem 1rem; color: #888; }
         .success-banner { background-color: #e8f5e9; color: #2e7d32; padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1rem; font-weight: bold; display: none; }
     </style>
@@ -37,143 +29,68 @@
 <body>
 <header>
     <h1>Our Lady of Fatima Church</h1>
-    <p>🎪 Christ the King Festival Coffee Booth 🎪</p>
+    <p>🎪 Christ the King Festival Coffee Order Form 🎪</p>
 </header>
 <div class="container">
-    <div class="view-toggle">
-        <button id="tab-customer" class="active" onclick="switchView('customer')">📱 Order Form</button>
-        <button id="tab-kitchen" onclick="switchView('kitchen')">☕ Queue (<span id="queue-count">0</span>)</button>
-    </div>
     <div id="success-alert" class="success-banner"></div>
-    <div id="view-customer">
-        <div class="card">
-            <h2>Place Your Macchiato Order</h2>
-            <form id="orderForm" onsubmit="event.preventDefault(); handleFormSubmit();">
-                <div class="form-group">
-                    <label>Your Name</label>
-                    <input type="text" id="custName" placeholder="Enter name for your cup" required>
-                </div>
-                <div class="form-group">
-                    <label>Select Your Drink</label>
-                    <select id="custDrink">
-                        <option value="Classic Iced Caramel Macchiato">Classic Iced Caramel Macchiato</option>
-                        <option value="Caramel Pumpkin Macchiato">Caramel Pumpkin Macchiato</option>
-                        <option value="Iced Apple Crisp Macchiato">Iced Apple Crisp Macchiato</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Milk Choice</label>
-                    <select id="custMilk">
-                        <option value="Whole Milk">Whole Milk</option>
-                        <option value="Almond Milk">Almond Milk</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Comments / Special Instructions</label>
-                    <input type="text" id="custComment" placeholder="Example: no cinnamon, extra caramel, etc.">
-                </div>
-                <button type="submit" class="btn-submit">🚀 Submit Order to Booth</button>
-            </form>
-        </div>
+    <div class="card">
+        <h2>Place Your Macchiato Order</h2>
+        <form id="orderForm" onsubmit="event.preventDefault(); handleFormSubmit();">
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" id="custName" placeholder="Enter name for your cup" required>
+            </div>
+            <div class="form-group">
+                <label>Select Your Drink</label>
+                <select id="custDrink">
+                    <option value="Classic Iced Caramel Macchiato">Classic Iced Caramel Macchiato</option>
+                    <option value="Caramel Pumpkin Macchiato">Caramel Pumpkin Macchiato</option>
+                    <option value="Iced Apple Crisp Macchiato">Iced Apple Crisp Macchiato</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Milk Choice</label>
+                <select id="custMilk">
+                    <option value="Whole Milk">Whole Milk</option>
+                    <option value="Almond Milk">Almond Milk</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Comments / Special Instructions</label>
+                <input type="text" id="custComment" placeholder="Example: no cinnamon, extra caramel, etc.">
+            </div>
+            <button type="submit" class="btn-submit">🚀 Submit Order to Booth</button>
+        </form>
     </div>
-    <div id="view-kitchen" style="display: none;">
-        <div class="card">
-            <h2>Active Orders Queue</h2>
-            <div id="active-list"></div>
-        </div>
-        <div class="card" style="background: #fdfdfd;">
-            <h2 style="color: #888; font-size: 1.1rem;">Completed Items</h2>
-            <div id="completed-list"></div>
-        </div>
+
+    <div class="card">
+        <h2>Current Waiting Queue</h2>
+        <div id="customer-list"></div>
     </div>
 </div>
 <script>
     let orders = [];
 
     function renderQueue() {
-        const activeList = document.getElementById('active-list');
-        const completedList = document.getElementById('completed-list');
-        let activeHtml = '', completedHtml = '', activeCount = 0;
-
+        const listContainer = document.getElementById('customer-list');
+        let html = '';
         orders.forEach(order => {
-            const commentHtml = order.comment ? `<div class="order-comment">⚠️ Instructions: ${order.comment}</div>` : '';
             const startTimeObj = new Date(order.startTime);
             const timeString = startTimeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            if (!order.done) {
-                activeCount++;
-                activeHtml += `<div class="queue-item"><div class="order-meta"><h3>${order.name}</h3><div class="order-details"><strong>${order.drink}</strong> — <u>${order.milk}</u></div>${commentHtml}<div class="order-time">Ordered at ${timeString}</div></div><div><button class="btn-complete" onclick="toggleOrder(${order.id})">Done ✓</button></div></div>`;
-            } else {
-                const waitHtml = order.waitTimeText ? `<div class="wait-tag">⏱️ Wait Time: ${order.waitTimeText}</div>` : '';
-                completedHtml += `<div class="queue-item completed"><div class="order-meta"><h3>${order.name}</h3><div class="order-details">${order.drink} (${order.milk})</div>${waitHtml}</div><div><button class="btn-complete undo" onclick="toggleOrder(${order.id})">Undo</button></div></div>`;
-            }
+            html += `<div class="queue-item"><div class="order-meta"><h3>${order.name}</h3><div class="order-details"><strong>${order.drink}</strong> (${order.milk})</div><div class="order-time">Ordered at ${timeString}</div><span class="status-badge">⏳ Preparing</span></div></div>`;
         });
-        document.getElementById('queue-count').innerText = activeCount;
-        activeList.innerHTML = activeHtml || '<div class="empty-state">☕ No pending orders. Time to build layers!</div>';
-        completedList.innerHTML = completedHtml || '<div class="empty-state" style="padding:1rem;">No completed items yet.</div>';
-    }
-
-    function switchView(view) {
-        if (view === 'customer') {
-            document.getElementById('view-customer').style.display = 'block';
-            document.getElementById('view-kitchen').style.display = 'none';
-            document.getElementById('tab-customer').classList.add('active');
-            document.getElementById('tab-kitchen').classList.remove('active');
-        } else {
-            document.getElementById('view-customer').style.display = 'none';
-            document.getElementById('view-kitchen').style.display = 'block';
-            document.getElementById('tab-customer').classList.remove('active');
-            document.getElementById('tab-kitchen').classList.add('active');
-        }
+        listContainer.innerHTML = html || '<div class="empty-state">☕ No pending orders. Scan above to place yours!</div>';
     }
 
     function handleFormSubmit() {
-        const nameInput = document.getElementById('custName');
-        const drinkInput = document.getElementById('custDrink');
-        const milkInput = document.getElementById('custMilk');
-        const commentInput = document.getElementById('custComment');
-
-        orders.push({
-            id: Date.now(),
-            name: nameInput.value,
-            drink: drinkInput.value,
-            milk: milkInput.value,
-            comment: commentInput.value.trim(),
-            startTime: Date.now(),
-            endTime: null,
-            waitTimeText: '',
-            done: false
-        });
-
+        const nameInput = document.getElementById('custName'), drinkInput = document.getElementById('custDrink'), milkInput = document.getElementById('custMilk'), commentInput = document.getElementById('custComment');
+        orders.push({ name: nameInput.value, drink: drinkInput.value, milk: milkInput.value, comment: commentInput.value.trim(), startTime: Date.now() });
         const alertBox = document.getElementById('success-alert');
         alertBox.innerText = `🎉 Order received for ${nameInput.value}! See you at the table.`;
         alertBox.style.display = 'block';
-
-        nameInput.value = ''; commentInput.value = '';
-        drinkInput.selectedIndex = 0; milkInput.selectedIndex = 0;
-
-        renderQueue();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        nameInput.value = ''; commentInput.value = ''; drinkInput.selectedIndex = 0; milkInput.selectedIndex = 0;
+        renderQueue(); window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => { alertBox.style.display = 'none'; }, 6000);
-    }
-
-    function toggleOrder(id) {
-        const order = orders.find(o => o.id === id);
-        if (order) {
-            order.done = !order.done;
-            if (order.done) {
-                order.endTime = Date.now();
-                const diffMs = order.endTime - order.startTime;
-                const totalSecs = Math.floor(diffMs / 1000);
-                const mins = Math.floor(totalSecs / 60);
-                const secs = totalSecs % 60;
-                order.waitTimeText = mins + "m " + secs + "s";
-            } else {
-                order.endTime = null;
-                order.waitTimeText = '';
-            }
-        }
-        renderQueue();
     }
     renderQueue();
 </script>
