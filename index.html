@@ -175,7 +175,19 @@ async function loadLiveQueue() {
       startTime: new Date(o.created_at).getTime()
     }));
     renderQueue();
-  }
+  
+// Keep a live stream open to pull new entries automatically
+supabase
+  .channel('schema-db-changes')
+  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, () => {
+    loadLiveQueue();
+  })
+  .subscribe();
+
+// Run it immediately when opening the page
+loadLiveQueue();
+
+}
 }
 
 // Keep a live stream open to pull new entries automatically
