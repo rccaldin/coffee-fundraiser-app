@@ -78,6 +78,12 @@
     </div>
 </div>
 <script>
+
+const SUPABASE_URL = "https://nfvjqvdljnwejupfuouv.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mdmpxdmRsam53ZWp1cGZ1b3V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzg0OTksImV4cCI6MjEwNzkxNDQ5OX0.h4Vc-TJLKRggtU8UkiUxPfAUkLxsJowLQQdJ5jKqiWc";
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+kg
+
     let orders = [];
 // ==========================================
 // CENTRAL DRINK MENU DATABASE (Update here!)
