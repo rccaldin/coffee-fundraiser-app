@@ -147,9 +147,17 @@ window.addEventListener('DOMContentLoaded', () => {
         listContainer.innerHTML = html || '<div class="empty-state">☕ No pending orders. Scan above to place yours!</div>';
     }
 
-    function handleFormSubmit() {
+    async function handleFormSubmit() {
         const nameInput = document.getElementById('custName'), drinkInput = document.getElementById('custDrink'), milkInput = document.getElementById('custMilk'), commentInput = document.getElementById('custComment');
-        orders.push({ name: nameInput.value, drink: drinkInput.value, milk: milkInput.value, comment: commentInput.value.trim(), startTime: Date.now() });
+        await supabase
+    .from('orders')
+    .insert([
+      { 
+        drink_name: drinkInput.value, 
+        milk_option: milkInput.value, 
+        comments: commentInput.value.trim() 
+      }
+    ]);
         const alertBox = document.getElementById('success-alert');
         alertBox.innerText = `🎉 Order received for ${nameInput.value}! See you at the table.`;
         alertBox.style.display = 'block';
