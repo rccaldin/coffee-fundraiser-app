@@ -25,14 +25,16 @@
         .empty-state { text-align: center; padding: 2rem 1rem; color: #888; }
         .success-banner { background-color: #e8f5e9; color: #2e7d32; padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1rem; font-weight: bold; display: none; }
     </style>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+</head>
+<body>
 
 <header>
     <h1>Our Lady of Fatima Church</h1>
     <p>🎪 Christ the King Festival Coffee Order Form 🎪</p>
 </header>
+
 <div class="container">
     <div id="success-alert" class="success-banner"></div>
     <div class="card">
@@ -42,25 +44,27 @@
                 <label>Your Name</label>
                 <input type="text" id="custName" placeholder="Enter name for your cup" required>
             </div>
-                    <div class="form-group">
-            <label>Select Your Drink</label>
-            <select id="custDrink" onchange="updateDrinkDisplay()">
-                <!-- Options are generated automatically by the script -->
-            </select>
-        </div>
-         <!-- Fancy Drink Detail Display Area -->
-        <div id="drink-preview-card" class="card" style="display: none; background: #faf8f5; border: 1px dashed var(--accent); margin-top: 1rem; padding: 1rem; text-align: center;">
-            <img id="preview-image" src="" alt="Drink Preview" style="max-width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 0.75rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            <h3 id="preview-title" style="margin: 0 0 0.5rem 0; color: var(--primary);"></h3>
-            <p id="preview-desc" style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.4; font-style: italic;"></p>
-        </div>
-        <div class="form-group">
-    <label>Milk Choice</label>
-    <select id="custMilk">
-        <option value="No Milk (Black)" selected>No Milk (Black)</option>
-        <option value="Whole Milk">Whole Milk</option>
-        <option value="Almond Milk">Almond Milk</option>
-    </select>
+            <div class="form-group">
+                <label>Select Your Drink</label>
+                <select id="custDrink" onchange="updateDrinkDisplay()">
+                    <!-- Options are generated automatically by the script -->
+                </select>
+            </div>
+            
+            <!-- Fancy Drink Detail Display Area -->
+            <div id="drink-preview-card" class="card" style="display: none; background: #faf8f5; border: 1px dashed var(--accent); margin-top: 1rem; padding: 1rem; text-align: center;">
+                <img id="preview-image" src="" alt="Drink Preview" style="max-width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 0.75rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <h3 id="preview-title" style="margin: 0 0 0.5rem 0; color: var(--primary);"></h3>
+                <p id="preview-desc" style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.4; font-style: italic;"></p>
+            </div>
+
+            <div class="form-group">
+                <label>Milk Choice</label>
+                <select id="custMilk">
+                    <option value="No Milk (Black)" selected>No Milk (Black)</option>
+                    <option value="Whole Milk">Whole Milk</option>
+                    <option value="Almond Milk">Almond Milk</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Comments / Special Instructions</label>
@@ -75,16 +79,14 @@
         <div id="customer-list"></div>
     </div>
 </div>
-<script>
 
-const SUPABASE_URL = "https://nfvjqvdljnwejupfuouv.supabase.co";
+<script>
+const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mdmpxdmRsam53ZWp1cGZ1b3V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzg0OTksImV4cCI6MjEwNzkxNDQ5OX0.h4Vc-TJLKRggtU8UkiUxPfAUkLxsJowLQQdJ5jKqiWc";
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let orders = [];
-// ==========================================
-// CENTRAL DRINK MENU DATABASE (Update here!)
-// ==========================================
+let orders = [];
+
 const DRINK_MENU = {
     "Classic Iced Caramel Macchiato": {
         description: "A timeless, beautiful layered favorite. Rich espresso poured directly over cold milk and sweet vanilla syrup, finished with a generous crosshatch drizzle of buttery caramel sauce.",
@@ -99,7 +101,6 @@ const DRINK_MENU = {
         image: "apple.jpg"
     }
 };
-
 
 function initializeMenuDropdown() {
     const drinkSelect = document.getElementById('custDrink');
@@ -130,83 +131,94 @@ function updateDrinkDisplay() {
     }
 }
 
+async function handleFormSubmit() {
+    const nameInput = document.getElementById('custName');
+    const drinkInput = document.getElementById('custDrink');
+    const milkInput = document.getElementById('custMilk');
+    const commentInput = document.getElementById('custComment');
+    
+    await supabase
+        .from('orders')
+        .insert([
+            { 
+                drink_name: drinkInput.value, 
+                milk_option: milkInput.value, 
+                comments: commentInput.value.trim() 
+            }
+        ]);
+
+    const alertBox = document.getElementById('success-alert');
+    alertBox.innerText = `☕ Order received for ${nameInput.value}! See you at the table.`;
+    alertBox.style.display = 'block';
+    
+    nameInput.value = '';
+    commentInput.value = '';
+    drinkInput.selectedIndex = 0;
+    milkInput.selectedIndex = 0;
+    updateDrinkDisplay();
+    
+    setTimeout(() => { alertBox.style.display = 'none'; }, 6000);
+}
+
+function renderQueue() {
+    const listContainer = document.getElementById('customer-list');
+    if (orders.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">☕ No pending orders. Scan above to place yours!</div>';
+        return;
+    }
+    
+    let html = '';
+    orders.forEach(order => {
+        const startTimeObj = new Date(order.startTime);
+        const timeString = startTimeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const notes = order.comment ? `<div style="font-style: italic; color: #666; font-size: 0.85rem; margin-top: 0.2rem;">📋 Note: ${order.comment}</div>` : '';
+        
+        html += `
+            <div class="queue-item">
+                <div class="order-meta">
+                    <h3>Order #${order.name}</h3>
+                    <div class="order-details"><strong>${order.drink}</strong> (${order.milk})</div>
+                    ${notes}
+                    <div class="order-time">Ordered at ${timeString}</div>
+                    <span class="status-badge">⏳ Preparing</span>
+                </div>
+            </div>`;
+    });
+    listContainer.innerHTML = html;
+}
+
+async function loadLiveQueue() {
+    const { data: pendingOrders } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('status', 'pending');
+        
+    if (pendingOrders) {
+        orders = pendingOrders.map(o => ({
+            name: o.id.toString(),
+            drink: o.drink_name,
+            milk: o.milk_option,
+            comment: o.comments,
+            startTime: new Date(o.created_at).getTime()
+        }));
+        renderQueue();
+    }
+}
+
+// Subscribe to real-time additions
+supabase
+    .channel('schema-db-changes')
+    
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, () => {
+        loadLiveQueue();
+    })
+    .subscribe();
+
 window.addEventListener('DOMContentLoaded', () => {
     initializeMenuDropdown();
+    loadLiveQueue();
 });
-    
-    function renderQueue() {
-        const listContainer = document.getElementById('customer-list');
-        let html = '';
-        orders.forEach(order => {
-            const startTimeObj = new Date(order.startTime);
-            const timeString = startTimeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            html += `<div class="queue-item"><div class="order-meta"><h3>${order.name}</h3><div class="order-details"><strong>${order.drink}</strong> (${order.milk})</div><div class="order-time">Ordered at ${timeString}</div><span class="status-badge">⏳ Preparing</span></div></div>`;
-        });
-        listContainer.innerHTML = html || '<div class="empty-state">☕ No pending orders. Scan above to place yours!</div>';
-    }
-
-    async function handleFormSubmit() {
-        const nameInput = document.getElementById('custName'), drinkInput = document.getElementById('custDrink'), milkInput = document.getElementById('custMilk'), commentInput = document.getElementById('custComment');
-        await supabase
-    .from('orders')
-    .insert([
-      { 
-        drink_name: drinkInput.value, 
-        milk_option: milkInput.value, 
-        comments: commentInput.value.trim() 
-      }
-    ]);
-// Automatically download pending orders when the screen loads
-async function loadLiveQueue() {
-  const { data: pendingOrders } = await supabase
-    .from('orders')
-    .select('*')
-    .eq('status', 'pending');
-    
-  if (pendingOrders) {
-    // Maps database structure to your existing queue layout
-    orders = pendingOrders.map(o => ({
-      name: o.id.toString(), // Uses ID as placeholder name
-      drink: o.drink_name,
-      milk: o.milk_option,
-      comment: o.comments,
-      startTime: new Date(o.created_at).getTime()
-    }));
-    renderQueue();
-  
-// Keep a live stream open to pull new entries automatically
-supabase
-  .channel('schema-db-changes')
-  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, () => {
-    loadLiveQueue();
-  })
-  .subscribe();
-
-// Run it immediately when opening the page
-loadLiveQueue();
-
-}
-}
-
-// Keep a live stream open to pull new entries automatically
-supabase
-  .channel('schema-db-changes')
-  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, () => {
-    loadLiveQueue();
-  })
-  .subscribe();
-
-// Run it immediately when opening the page
-loadLiveQueue();
-
-        const alertBox = document.getElementById('success-alert');
-        alertBox.innerText = `🎉 Order received for ${nameInput.value}! See you at the table.`;
-        alertBox.style.display = 'block';
-        nameInput.value = ''; commentInput.value = ''; drinkInput.selectedIndex = 0; milkInput.selectedIndex = 0;
-        renderQueue(); window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => { alertBox.style.display = 'none'; }, 6000);
-    }
-    renderQueue();
 </script>
 </body>
 </html>
+
