@@ -159,7 +159,35 @@ async function loadLiveQueue() {
         renderQueue();
     }
 }
+async function handleFormSubmit() {
+    const nameInput = document.getElementById('custName');
+    const drinkInput = document.getElementById('custDrink');
+    const milkInput = document.getElementById('custMilk');
+    const commentInput = document.getElementById('custComment');
+    
+    await supabase
+        .from('orders')
+        .insert([
+            { 
+                drink_name: drinkInput.value, 
+                milk_option: milkInput.value, 
+                comments: commentInput.value.trim() 
+            }
+        ]);
 
+    const alertBox = document.getElementById('success-alert');
+    alertBox.innerText = `☕ Order received for ${nameInput.value}! See you at the table.`;
+    alertBox.style.display = 'block';
+    
+    nameInput.value = '';
+    commentInput.value = '';
+    drinkInput.selectedIndex = 0;
+    milkInput.selectedIndex = 0;
+    updateDrinkDisplay();
+    
+    setTimeout(() => { alertBox.style.display = 'none'; }, 6000);
+}
+    
 // Subscribe to real-time additions
 supabase
     .channel('schema-db-changes')
