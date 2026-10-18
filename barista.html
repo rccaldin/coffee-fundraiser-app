@@ -23,6 +23,9 @@
         .btn-complete.undo { background-color: #7f8c8d; }
         .empty-state { text-align: center; padding: 2rem 1rem; color: #7f8c8d; }
     </style>
+    
+    <!-- 1. ADDED SUPABASE CDN LIBRARY LOADING PATH -->
+    <script src="https://jsdelivr.net"></script>
 </head>
 <body>
 <header>
@@ -40,12 +43,15 @@
     </div>
 </div>
 <script>
-    // Grabbing the list mock database profile framework reference
-    let orders = [
-        { id: 1, name: 'Pastor Dave', drink: 'Caramel Pumpkin Macchiato', milk: 'Whole Milk', comment: 'Extra caramel drizzle', startTime: Date.now() - 300000, endTime: Date.now(), waitTimeText: '5m 0s', done: true },
-        { id: 2, name: 'Sarah M.', drink: 'Iced Apple Crisp Macchiato', milk: 'Almond Milk', comment: 'no cinnamon', startTime: Date.now() - 120000, endTime: null, waitTimeText: '', done: false }
-    ];
+    // 2. INITIALIZE SUPABASE BACKEND KEYS
+    // Ensure these variables use a Capital "S" in Supabase.createClient
+    const SUPABASE_URL = "https://supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mdmpxdmRsam53ZWp1cGZ1b3V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzg0OTksImV4cCI6MjEwNzkxNDQ5OX0.h4Vc-TJLKRggtU8UkiUxPfAUkLxsJowLQQdJ5jKqiWc";
+    const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    let orders = [];
+
+    // 3. RENDER THE CLOUD BACKED LAYOUT PANELS
     function renderQueue() {
         const activeList = document.getElementById('active-list'), completedList = document.getElementById('completed-list');
         let activeHtml = '', completedHtml = '';
@@ -53,30 +59,85 @@
         orders.forEach(order => {
             const commentHtml = order.comment ? `<div class="order-comment">⚠️ Instructions: ${order.comment}</div>` : '';
             if (!order.done) {
-                activeHtml += `<div class="queue-item"><div class="order-meta"><h3>${order.name}</h3><div class="order-details"><strong>${order.drink}</strong> — <u>${order.milk}</u></div>${commentHtml}</div><div><button class="btn-complete" onclick="toggleOrder(${order.id})">Done ✓</button></div></div>`;
+                activeHtml += `<div class="queue-item"><div class="order-meta"><h3>${order.name}</h3><div class="order-details"><strong>${order.drink}</strong> — <u>${order.milk}</u></div>${commentHtml}</div><div><button class="btn-complete" onclick="toggleOrder(${order.id}, true)">Done ✓</button></div></div>`;
             } else {
                 const waitHtml = order.waitTimeText ? `<div class="wait-tag">⏱️ Wait Time: ${order.waitTimeText}</div>` : '';
-                completedHtml += `<div class="queue-item completed"><div class="order-meta"><h3>${order.name}</h3><div class="order-details">${order.drink} (${order.milk})</div>${waitHtml}</div><div><button class="btn-complete undo" onclick="toggleOrder(${order.id})">Undo</button></div></div>`;
+                completedHtml += `<div class="queue-item completed"><div class="order-meta"><h3>${order.name}</h3><div class="order-details">${order.drink} (${order.milk})</div>${waitHtml}</div><div><button class="btn-complete undo" onclick="toggleOrder(${order.id}, false)">Undo</button></div></div>`;
             }
         });
         activeList.innerHTML = activeHtml || '<div class="empty-state">☕ No pending orders. Time to build layers!</div>';
         completedList.innerHTML = completedHtml || '<div class="empty-state">No completed items yet.</div>';
     }
 
-    function toggleOrder(id) {
-        const order = orders.find(o => o.id === id);
-        if (order) {
-            order.done = !order.done;
-            if (order.done) {
-                order.endTime = Date.now();
-                const diffMs = order.endTime - order.startTime, totalSecs = Math.floor(diffMs / 1000), mins = Math.floor(totalSecs / 60), secs = totalSecs % 60;
-                order.waitTimeText = `${mins}m ${secs}s`;
-            } else { order.endTime = null; order.waitTimeText = ''; }
+    // 4. ACTION INTERFACE: UPDATE DATA RECORD AND FLUSH CHANGES BACK TO SUPABASE
+    async function toggleOrder(id, markAsDone) {
+        const targetStatus = markAsDone ? 'completed' : 'pending';
+        
+        // Push status changes directly to your live cloud table row match by row ID
+        const { error } = await supabase
+            .from('orders')
+            .update({ status: targetStatus })
+            .eq('id', id);
+
+        if (error) {
+            console.error("Failed to alter record status on database backend:", error.message);
+        } else {
+            // Local state updates instantly on success confirmation, then re-fetches cleanly
+            await loadLiveQueue();
         }
-        renderQueue();
     }
-    renderQueue();
+
+    // 5. DOWNLOAD WORKFLOW DATA LOGS 
+    async function loadLiveQueue() {
+        const { data: databaseRows, error } = await supabase
+            .from('orders')
+            .select('*')
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error("Data tracking failure:", error.message);
+            return;
+        }
+
+        if (databaseRows) {
+            orders = databaseRows.map(o => {
+                let waitText = '';
+                if (o.status === 'completed') {
+                    // Quick duration math for displaying barista cycle time lengths
+                    const diffMs = Date.now() - new Date(o.created_at).getTime();
+                    const totalSecs = Math.floor(diffMs / 1000);
+                    const mins = Math.floor(totalSecs / 60);
+                    const secs = totalSecs % 60;
+                    waitText = `${mins}m ${secs}s`;
+                }
+
+                return {
+                    id: o.id,
+                    name: "Customer Order", // Using default placeholder name card tracking
+                    drink: o.drink_name,
+                    milk: o.milk_option,
+                    comment: o.comments,
+                    startTime: new Date(o.created_at).getTime(),
+                    done: o.status === 'completed',
+                    waitTimeText: waitText
+                };
+            });
+            renderQueue();
+        }
+    }
+
+    // 6. OPEN REAL-TIME WEBSOCKET REPLICATION STREAM CHANNELS
+    supabase
+        .channel('schema-db-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+            loadLiveQueue();
+        })
+        .subscribe();
+
+    // 7. FIRE COMPONENT PARSERS AS SOON AS BROWSER MOUNTS LAYOUT 
+    window.addEventListener('DOMContentLoaded', () => {
+        loadLiveQueue();
+    });
 </script>
 </body>
 </html>
-
