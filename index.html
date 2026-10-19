@@ -109,9 +109,10 @@ function initializeMenuDropdown() {
         opt.innerHTML = drinkName;
         drinkSelect.appendChild(opt);
     });
-        updateDrinkDisplay();
-    
-} 
+    // Change line 112 to call the function after a 0-second delay loop
+    setTimeout(updateDrinkDisplay, 0);
+}
+
 function updateDrinkDisplay() {
     const selectedDrink = document.getElementById('custDrink').value;
     const previewCard = document.getElementById('drink-preview-card');
