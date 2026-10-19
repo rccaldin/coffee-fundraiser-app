@@ -109,7 +109,7 @@ function initializeMenuDropdown() {
         opt.innerHTML = drinkName;
         drinkSelect.appendChild(opt);
     });
-    // Change line 112 to call the function after a 0-second delay loop
+    // Gives the selection box a split second to paint the options before updating
     setTimeout(updateDrinkDisplay, 0);
 }
 
