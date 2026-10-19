@@ -203,8 +203,7 @@ async function handleFormSubmit() {
 }
     
 // Subscribe to real-time additions
-supabase
-    .channel('schema-db-changes')
+supabase.channel('schema-db-changes')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, () => {
         loadLiveQueue();
     })
