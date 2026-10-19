@@ -114,7 +114,22 @@ function initializeMenuDropdown() {
     
     setTimeout(() => { alertBox.style.display = 'none'; }, 6000);
 }
-
+function updateDrinkDisplay() {
+    const selectedDrink = document.getElementById('custDrink').value;
+    const previewCard = document.getElementById('drink-preview-card');
+    const previewImg = document.getElementById('preview-image');
+    const previewTitle = document.getElementById('preview-title');
+    const previewDesc = document.getElementById('preview-desc');
+    
+    if (DRINK_MENU[selectedDrink]) {
+        previewImg.src = DRINK_MENU[selectedDrink].image;
+        previewTitle.innerText = selectedDrink;
+        previewDesc.innerText = DRINK_MENU[selectedDrink].description;
+        previewCard.style.display = "block";
+    } else {
+        previewCard.style.display = "none";
+    }
+}
 function renderQueue() {
     const listContainer = document.getElementById('customer-list');
     if (orders.length === 0) {
