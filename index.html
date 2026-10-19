@@ -100,7 +100,6 @@ const DRINK_MENU = {
         image: "apple.jpg"
     }
 };
-
 function initializeMenuDropdown() {
     const drinkSelect = document.getElementById('custDrink');
     drinkSelect.innerHTML = "";
@@ -111,7 +110,8 @@ function initializeMenuDropdown() {
         drinkSelect.appendChild(opt);
     });
         updateDrinkDisplay();
-}
+    
+} 
 function updateDrinkDisplay() {
     const selectedDrink = document.getElementById('custDrink').value;
     const previewCard = document.getElementById('drink-preview-card');
